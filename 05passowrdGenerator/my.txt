@@ -1,0 +1,10 @@
+extra : 
+ - used alert window to notify the user that the password has been copied
+ - added a 'new password' button to generate a new password
+
+less :
+ - did not use uesRef hook - seemed overkill
+
+learnt :
+ - useEffect
+ - useCallback
