@@ -1,8 +1,12 @@
-# React + Vite
+extra : 
+ - used alert window to notify the user that the password has been copied
+ - added a 'new password' button to generate a new password
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+less :
+ - did not use uesRef hook - seemed overkill
 
-Currently, two official plugins are available:
+learnt :
+ - useEffect
+ - useCallback
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![img](https://github.com/pa-one55/React-Projects/blob/master/05passowrdGenerator/Screenshot%202024-06-21%20001747.png?raw=true)
