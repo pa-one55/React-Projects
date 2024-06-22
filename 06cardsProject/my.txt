@@ -1,0 +1,9 @@
+used :
+    react icons
+    framer-motion
+
+hoos : 
+    useEffect
+    useRef
+
+//
