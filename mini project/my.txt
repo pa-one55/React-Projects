@@ -1,0 +1,23 @@
+app desc :  
+    - we'll create users
+    - users can write post
+
+functions : 
+    - login, logout, register
+    - post creation
+    - post like
+    - post delete ( only to the owner )
+
+
+packages : 
+    express
+    mongoose
+    bcrypt 
+    jsonwebtoken 
+    cookie-parser
+    ejs
+
+
+
+extra :
+- added error handling - wrong entries in the form, empty fields and all
