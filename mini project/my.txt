@@ -21,3 +21,11 @@ packages :
 
 extra :
 - added error handling - wrong entries in the form, empty fields and all
+
+
+
+issue faced : 
+    - the post was showing in my DB, but the post array in the userProfile was empty
+    - wrong syntaxt -> <% user.username %>
+    correct syntaxt -> <%= user.username %>
+    forgot to put that `=` sign

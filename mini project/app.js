@@ -23,10 +23,26 @@ app.get('/login', (req,res) => {
     res.render("login");
 } );
 
-app.get('/profile', isLoggedIn,(req,res) => {
-    console.log(req.user);
-    res.render("login");
+app.get('/profile', isLoggedIn, async (req,res) => {
+    let user = await userModel.findOne({email : req.user.email}).populate("post");
+    // console.log(user);
+    // user.populate("post");  // 'post' not 'posts'  yaha nhi karte ye
+    res.render("profile",{user});
 } );
+
+app.post('/post', isLoggedIn, async (req,res) => {
+    let user = await userModel.findOne({email : req.user.email});
+    let {content} = req.body; // using below to create a new post with the given content
+    let post = await postModel.create({
+        user : user._id, // create ho rhe user me logged in waale user ka id jaa rha hai
+        content // content : content, - alternate syntax
+    });
+    user.post.push(post._id); // NOTE : its "post" not "posts" , singular
+    await user.save();
+    console.log(post);
+    res.redirect("/profile");
+} );
+
 
 
 app.post('/register', async (req,res) =>{
@@ -66,7 +82,7 @@ app.post('/login', async (req,res) =>{
         if( result ) {
             let token = jwt.sign({email:email, userid : user._id}, "secretKey");
             res.cookie("token", token);
-            res.status(200).send("You can log in");
+            res.status(200).redirect("/profile");
         }
         else res.redirect("/login");
     })
@@ -79,7 +95,7 @@ app.get('/logout', (req,res) => {
 
 
 function isLoggedIn(req,res,next){
-    if( req.cookies.token === "" ) res.send("not logged in");
+    if( req.cookies.token === "" ) res.redirect("/login");
     else{
         let data = jwt.verify(req.cookies.token, "secretKey");
         req.user = data; // made a new field 'user' and put the data in there
