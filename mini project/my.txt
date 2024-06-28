@@ -21,8 +21,12 @@ packages :
 
 extra :
 - added error handling - wrong entries in the form, empty fields and all
-
-
+- handeled the case when user directly tries to access the profile page
+   - in this case there is no cookie to begin with 
+   - so just added that case
+- added 'register' button on login page, in case a new user comes directly at the login page
+- added login on register page
+- added delete a post feature
 
 issue faced : 
     - the post was showing in my DB, but the post array in the userProfile was empty

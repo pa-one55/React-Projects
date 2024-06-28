@@ -30,6 +30,37 @@ app.get('/profile', isLoggedIn, async (req,res) => {
     res.render("profile",{user});
 } );
 
+app.get('/like/:id', isLoggedIn, async (req,res) => {
+    let post = await postModel.findOne({_id : req.params.id}).populate("user");
+    if( post.likes.indexOf(req.user.userid) == -1 ){ // mtlb iss user ne pahle se like nhi kr rakha - to likes badha do
+        post.likes.push(req.user.userid); // req bhejne waale user ka id , post owner k post k likes array me push kara
+    }
+    else{ // else likes ghata do
+        post.likes.splice(post.likes.indexOf(req.user.userid),1); // ( index, count )
+    }
+    await post.save();
+    res.redirect("/profile");
+} );
+
+
+app.get('/edit/:id', isLoggedIn, async (req,res) => {
+    let post = await postModel.findOne({_id : req.params.id}).populate("user");
+    res.render("edit", {post});
+} );
+
+app.post('/update/:id', isLoggedIn, async (req,res) => {
+    let post = await postModel.findOneAndUpdate({_id : req.params.id}, {content : req.body.content});
+    res.redirect("/profile");
+} );
+
+app.get('/delete/:id', isLoggedIn, async (req, res) => {
+    // Find the post by ID and delete it
+    let post = await postModel.findByIdAndDelete(req.params.id);
+    console.log(`Deleted post: ${post}`);
+    res.render("deleted");
+});
+
+
 app.post('/post', isLoggedIn, async (req,res) => {
     let user = await userModel.findOne({email : req.user.email});
     let {content} = req.body; // using below to create a new post with the given content
@@ -44,9 +75,23 @@ app.post('/post', isLoggedIn, async (req,res) => {
 } );
 
 
-
 app.post('/register', async (req,res) =>{
     let {email, password, username, name, age } = req.body;
+    // Validate user inputs
+    if (!email || !password || !username || !name || !age) {
+        return res.status(400).send("All fields are required.");
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+        return res.status(400).send("Invalid email format.");
+    }
+    
+    if (password.length < 6) {
+        return res.status(400).send("Password must be at least 6 characters long.");
+    }
+    
+    if ( isNaN(age) || age <= 0 || age > 100 ) {
+        return res.status(400).send("Enter correct age");
+    }
     // check if the user already exists
     let user = await userModel.findOne({email}); // trynna find old user
     if( user ) return res.status(500).send("User already exists");
@@ -64,7 +109,8 @@ app.post('/register', async (req,res) =>{
             });
             let token = jwt.sign({email:email, userid : user._id}, "secretKey");
             res.cookie("token", token);
-            res.send("user registered");
+            // res.send("user registered");
+            res.redirect("/profile")
         })
     } )
 })
@@ -95,7 +141,7 @@ app.get('/logout', (req,res) => {
 
 
 function isLoggedIn(req,res,next){
-    if( req.cookies.token === "" ) res.redirect("/login");
+    if( !req.cookies || !req.cookies.token || req.cookies.token === "" ) res.redirect("/login");
     else{
         let data = jwt.verify(req.cookies.token, "secretKey");
         req.user = data; // made a new field 'user' and put the data in there
